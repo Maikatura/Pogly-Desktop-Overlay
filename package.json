@@ -1,6 +1,6 @@
 {
   "name": "pogly-desktop-overlay",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Pogly Desktop Overlay",
   "main": "main.js",
   "scripts": {
@@ -16,8 +16,7 @@
     "win": {
       "target": "portable",
       "icon": "pogly.ico",
-      "artifactName": "pogly-desktop-overlay-${version}.exe",
-      "signAndEditExecutable": false
+      "artifactName": "pogly-desktop-overlay-${version}.exe"
     }
   },
   "dependencies": {
