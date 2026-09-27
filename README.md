@@ -40,16 +40,23 @@ Grab the latest release from the [releases page](https://github.com/PoglyApp/pog
 
 ### First Launch
 
-1. On first launch you'll be prompted to enter your **Pogly module name** (e.g. `chippy`)
-2. The app constructs the URL automatically: `https://cloud.pogly.gg/overlay?module=<name>`
+1. On first launch you'll be prompted to enter your **Pogly server URL** and **module name**
+   - **Pogly Cloud:** server `https://cloud.pogly.gg`, module e.g. `chippy`
+   - **Self-hosted (pogly-standalone Docker):** server e.g. `http://localhost:8080` or `https://pogly.example.com`, module e.g. `pogly`
+2. The app constructs the URL automatically: `<server>/overlay?module=<name>`
+   - Cloud example: `https://cloud.pogly.gg/overlay?module=chippy`
+   - Self-hosted example: `http://localhost:8080/overlay?module=pogly`
 3. The overlay loads fullscreen, transparent, and click-through — it won't interfere with your game
+
+> **Advanced:** tick `Use full custom URL` in the connection dialog to paste the exact overlay URL instead (same one you'd use as an OBS browser source). This preserves extra params like `&domain=`, `&auth=`, `&layout=`, or `&transparent=`.
 
 ### Controls
 
 | Action | How |
 |---|---|
 | Toggle overlay visibility | Press `Insert` (default) or your configured hotkey |
-| Change module | Right-click tray icon → Change Pogly Module |
+| Change connection (server / module) | Right-click tray icon → Change Connection (Server / Module) |
+| Copy current overlay URL | Right-click tray icon → Copy Overlay URL |
 | Change hotkey | Right-click tray icon → Change Hotkey |
 | Adjust opacity | Right-click tray icon → Opacity |
 | Reset all settings | Right-click tray icon → Reset Settings |
@@ -87,7 +94,8 @@ npm run build
 
 ```
 ├── src/
-│   ├── dialogs.js     # Module name and hotkey prompts
+│   ├── connection.js  # Server/module URL building, parsing, validation
+│   ├── dialogs.js     # Server/module connection and hotkey prompts
 │   ├── shortcuts.js   # Global hotkey registration
 │   ├── tray.js        # System tray menu
 │   ├── webContent.js  # Content scaling (1920x1080 → native resolution)
@@ -100,7 +108,8 @@ npm run build
 ### Notes
 
 - The overlay window is scaled from a fixed 1920×1080 canvas to fit your actual screen resolution. This matches how Pogly Cloud renders its canvas.
-- Settings (module URL, hotkey, opacity) are persisted automatically between sessions via `electron-store`.
+- Self-hosted `pogly-standalone` instances expose the same `/overlay?module=<name>` route on whatever origin the container is served from (default `http://localhost:8080` for the Docker image), defaulting the SpacetimeDB domain to same-origin — so just pointing the desktop app at your instance origin is enough.
+- Settings (server URL, module, full overlay URL, hotkey, opacity) are persisted automatically between sessions via `electron-store`. Existing installs with only a cloud `url` saved are migrated automatically to the new `serverUrl` + `module` settings.
 
 ## License
 

@@ -16,7 +16,8 @@
     "win": {
       "target": "portable",
       "icon": "pogly.ico",
-      "artifactName": "pogly-desktop-overlay-${version}.exe"
+      "artifactName": "pogly-desktop-overlay-${version}.exe",
+      "signAndEditExecutable": false
     }
   },
   "dependencies": {

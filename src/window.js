@@ -1,6 +1,18 @@
 const { BrowserWindow, screen } = require('electron')
 const { promptForUrl } = require('./dialogs')
 const { setupWebContent } = require('./webContent')
+const { DEFAULT_SERVER_URL, buildOverlayUrl } = require('./connection')
+
+function getEffectiveUrl(store) {
+  const storedUrl = store.get('url') || ''
+  const serverUrl = store.get('serverUrl') || DEFAULT_SERVER_URL
+  const module = store.get('module') || ''
+  if (module) {
+    const built = buildOverlayUrl(serverUrl, module)
+    if (built) return built
+  }
+  return storedUrl
+}
 
 function createWindow(store) {
   const primaryDisplay = screen.getPrimaryDisplay()
@@ -28,7 +40,7 @@ function createWindow(store) {
     opacity: store.get('opacity')
   })
 
-  const currentUrl = store.get('url')
+  const currentUrl = getEffectiveUrl(store)
   if (currentUrl) {
     window.loadURL(currentUrl)
   } else {

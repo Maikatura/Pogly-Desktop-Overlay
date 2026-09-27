@@ -1,7 +1,8 @@
-const { Tray, Menu, globalShortcut } = require('electron')
+const { Tray, Menu, globalShortcut, clipboard } = require('electron')
 const path = require('path')
 const { promptForUrl, promptForHotkey } = require('./dialogs')
 const { registerHotkey } = require('./shortcuts')
+const { DEFAULT_SERVER_URL } = require('./connection')
 
 function setupTray(mainWindow, store) {
   const tray = new Tray(path.join(__dirname, '../pogly.ico'))
@@ -23,6 +24,8 @@ function setupTray(mainWindow, store) {
     globalShortcut.unregisterAll()
     store.clear()
     store.set('hotkey', 'Insert')
+    store.set('serverUrl', DEFAULT_SERVER_URL)
+    store.set('module', '')
     store.set('url', '')
     store.set('opacity', 1)
     if (mainWindow) {
@@ -35,10 +38,18 @@ function setupTray(mainWindow, store) {
   }
 
   function buildMenu() {
+    const serverUrl = store.get('serverUrl') || DEFAULT_SERVER_URL
+    const module = store.get('module') || ''
+    const currentUrl = store.get('url') || ''
+    const connectionLabel = module ? `${module} @ ${serverUrl}` : (currentUrl || serverUrl)
     return Menu.buildFromTemplate([
       {
         label: `Toggle Overlay (${store.get('hotkey')})`,
         click: toggleWindowVisibility
+      },
+      {
+        label: `Connection: ${connectionLabel}`,
+        enabled: false
       },
       {
         label: 'Opacity',
@@ -51,8 +62,16 @@ function setupTray(mainWindow, store) {
       },
       { type: 'separator' },
       {
-        label: 'Change Pogly Module',
+        label: 'Change Connection (Server / Module)',
         click: () => promptForUrl(store, mainWindow)
+      },
+      {
+        label: 'Copy Overlay URL',
+        enabled: Boolean(store.get('url')),
+        click: () => {
+          const urlToCopy = store.get('url') || ''
+          if (urlToCopy) clipboard.writeText(urlToCopy)
+        }
       },
       {
         label: 'Change Hotkey',
